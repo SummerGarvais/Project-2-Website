@@ -220,6 +220,29 @@
 
                 <figure>
                     <div class="chart-wrap">
+                        <svg id="for-chart-found" class="chart" viewBox="0 0 920 560" role="img" aria-labelledby="for-chart-found-title for-chart-found-desc">
+                            <title id="for-chart-found-title">Higher energy use, higher gasoline prices among energy importers</title>
+                            <desc id="for-chart-found-desc">Scatterplot of 2004 energy-importing countries comparing energy use per capita with pump price for gasoline.</desc>
+                        </svg>
+                    </div>
+                    <figcaption>Among 2004 countries that imported more energy than they exported, the higher-energy-use half had a median gasoline price of $1.17 per liter, compared with $0.75 per liter for the lower-energy-use half.</figcaption>
+                </figure>
+
+                <p>Design Decisions and Rationale:</p>
+
+                <ul>
+                    <li><strong>-1.5:</strong> I filtered to 2004 net energy importers. This is still selective, but the constraint follows the proposition more directly: when countries rely on imported energy, higher consumption is more likely to expose them to higher fuel prices.</li>
+                    <li><strong>1:</strong> I used a country-level scatterplot with a fitted trend line so the positive association is readable without hiding individual observations. The marks still show exceptions, while the line makes the intended conclusion immediate.</li>
+                    <li><strong>-0.5:</strong> I used a log scale for energy use per person. This keeps low- and high-consumption countries in the same frame and makes the upward relationship easier to see across a wide range of energy use.</li>
+                    <li><strong>0.5:</strong> The color split compares the lower- and higher-energy halves and pairs it with a median-price callout. This helps readers remember the main numerical contrast, though it steers attention toward a binary framing.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h3>FOR the Proposition: Checkpoint View</h3>
+
+                <figure>
+                    <div class="chart-wrap">
                         <svg id="for-chart-checkpoint" class="chart" viewBox="0 0 920 560" role="img" aria-labelledby="for-chart-checkpoint-title for-chart-checkpoint-desc">
                             <title id="for-chart-checkpoint-title">Power consumption and gasoline prices</title>
                             <desc id="for-chart-checkpoint-desc">Scatterplot of 2012 electric power consumption per capita and pump price for gasoline.</desc>
@@ -231,14 +254,37 @@
                 <p>Design Decisions and Rationale:</p>
 
                 <ul>
-                    <li>RATIONALE_1</li>
-                    <li>RATIONALE_2</li>
-                    <li>RATIONALE_3</li>
+                    <li><strong>0.5:</strong> This checkpoint view uses electric power consumption per capita as a proxy for energy consumption. That makes the relationship easier to interpret for readers, though it narrows the meaning of "energy" to electricity rather than all fuels.</li>
+                    <li><strong>1:</strong> The chart keeps a country-level scatterplot and trend line, which makes the positive relationship visible while preserving outliers. The higher-power half median callout gives the viewer a quick numerical takeaway.</li>
+                    <li><strong>-0.5:</strong> The log-scaled x-axis compresses the huge difference between low- and high-power countries. This is reasonable for the range of values, but it also makes the upward pattern feel steadier than it would on a linear axis.</li>
                 </ul>
             </section>
 
             <section>
                 <h3>AGAINST the Proposition</h3>
+
+                <figure>
+                    <div class="chart-wrap">
+                        <svg id="against-chart-found" class="chart" viewBox="0 0 920 560" role="img" aria-labelledby="against-chart-found-title against-chart-found-desc">
+                            <title id="against-chart-found-title">Higher energy use, cheaper gasoline among net energy exporters</title>
+                            <desc id="against-chart-found-desc">Scatterplot of 2014 net energy-exporting countries comparing energy use per capita with pump price for gasoline.</desc>
+                        </svg>
+                    </div>
+                    <figcaption>Among 2014 net energy-exporting countries, the higher-energy-use half had a median gasoline price of $0.75 per liter, compared with $1.07 per liter for the lower-energy-use half.</figcaption>
+                </figure>
+
+                <p>Design Decisions and Rationale:</p>
+
+                <ul>
+                    <li><strong>-1.5:</strong> I filtered to net energy exporters in 2014, where the relationship cuts against the proposition. This is persuasive because high-consumption fuel-producing countries often have cheaper domestic fuel, but it is selective because it leaves out many high-income energy importers with high gasoline prices.</li>
+                    <li><strong>1:</strong> I used a scatterplot with country-level marks and a fitted trend line so the downward direction is visible without hiding individual observations. This makes the counterargument feel data-driven while still showing exceptions like Norway.</li>
+                    <li><strong>-0.5:</strong> The x-axis uses a log scale for energy use per capita. This makes small and very large energy users fit cleanly in one chart and visually strengthens the downward pattern by spacing high-energy exporters more evenly.</li>
+                    <li><strong>0.5:</strong> The color split highlights the higher-energy-use half in orange and the lower half in gray. This supports quick comparison of the two medians, though it nudges the reader toward the intended high-versus-low framing.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h3>AGAINST the Proposition: Checkpoint View</h3>
 
                 <figure>
                     <div class="chart-wrap">
@@ -253,9 +299,9 @@
                 <p>Design Decisions and Rationale:</p>
 
                 <ul>
-                    <li>RATIONALE_1</li>
-                    <li>RATIONALE_2</li>
-                    <li>RATIONALE_3</li>
+                    <li><strong>0.5:</strong> This checkpoint view groups country-level points by broad World Bank region and samples each region across its power-consumption range. That mirrors the checkpoint approach more closely than regional averages while keeping the number of points readable.</li>
+                    <li><strong>1:</strong> Coloring by region makes it easier to see that the relationship is not uniform across geography. The legend supports the regional comparison, while country-level points preserve more detail than one aggregate point per region.</li>
+                    <li><strong>-0.5:</strong> The balanced regional sample is persuasive but selective: it avoids letting regions with many countries dominate the chart. That helps the against side by making cross-region exceptions visible, but it also means this view is not the full country-level distribution.</li>
                 </ul>
             </section>
 
@@ -553,8 +599,25 @@
 
         function renderCharts(rows) {
                 const countries = rows.filter(isCountry);
+                const importerData = countries.filter(d => d.year === 2004 && d.imports > 0 && Number.isFinite(d.energy) && Number.isFinite(d.gas));
                 const powerData = countries.filter(d => d.year === 2012 && Number.isFinite(d.power) && Number.isFinite(d.gas));
+                const exporterData = countries.filter(d => d.year === 2014 && d.imports < 0 && Number.isFinite(d.energy) && Number.isFinite(d.gas));
                 const regionData = powerData;
+
+                drawScatter({
+                    id: "#for-chart-found",
+                    data: importerData,
+                    xKey: "energy",
+                    xLabel: "Energy use per person, kg of oil equivalent (log scale)",
+                    tooltipUnit: "kg/person",
+                    xTicks: [150, 300, 600, 1200, 2500, 5000, 10000],
+                    title: "Higher energy use, higher gasoline prices",
+                    subtitle: "2004 net energy-importing countries",
+                    lowLabel: "Lower energy half",
+                    highLabel: "Higher energy half",
+                    highlight: ["Turkey", "Netherlands", "Iceland", "Hong Kong SAR, China"],
+                    note: "Source: World Bank energy and mining indicators. Countries missing 2004 energy, gasoline price, or net-import values are omitted."
+                });
 
                 drawScatter({
                     id: "#for-chart-checkpoint",
@@ -569,6 +632,22 @@
                     highLabel: "Higher power half",
                     highlight: ["Norway", "Finland", "Turkey", "Italy", "United States", "Iceland"],
                     note: "Source: World Bank energy and mining indicators."
+                });
+
+                drawScatter({
+                    id: "#against-chart-found",
+                    data: exporterData,
+                    xKey: "energy",
+                    xLabel: "Energy use per person, kg of oil equivalent (log scale)",
+                    tooltipUnit: "kg/person",
+                    xTicks: [100, 250, 500, 1000, 2500, 5000, 10000],
+                    title: "Higher energy use, cheaper gasoline",
+                    subtitle: "2014 net energy-exporting countries, filtered to countries exporting more energy than they import",
+                    lowLabel: "Lower energy half",
+                    highLabel: "Higher energy half",
+                    highlight: ["Qatar", "Kuwait", "Saudi Arabia", "United Arab Emirates", "Norway"],
+                    labelMap: { "United Arab Emirates": "UAE" },
+                    note: "Source: World Bank energy and mining indicators. Countries without 2014 net-import, gasoline price, or energy-use values are omitted."
                 });
 
                 drawRegionChart(regionData);
